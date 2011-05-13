@@ -9,7 +9,8 @@ module Delayed
         # Add a job to the queue
         def enqueue(*args)
           options = {
-            :priority => Delayed::Worker.default_priority
+            :priority => Delayed::Worker.default_priority,
+            :database => Hijacker.current_client
           }.merge!(args.extract_options!)
 
           options[:payload_object] ||= args.shift
@@ -49,6 +50,7 @@ module Delayed
 
         # Hook method that is called after a new worker is forked
         def after_fork
+          ::ActiveRecord::Base.connection.reconnect!
         end
 
         def work_off(num = 100)
@@ -85,6 +87,8 @@ module Delayed
       end
 
       def invoke_job
+        Hijacker.connect_to_master(database)
+        $0 = "#{base_name}: #{database} #{payload_object.class.to_s} #{id}"
         hook :before
         payload_object.perform
         hook :success
