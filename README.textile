@@ -1,3 +1,7 @@
+h1. Hijacked Delayed::Job
+
+The purpose of this fork is to modify Delayed::Job for use with Hijacker (https://github.com/crystalcommerce/hijacker).
+
 h1. Delayed::Job
 
 Delayed_job (or DJ) encapsulates the common pattern of asynchronously executing longer tasks in the background.
